@@ -1,4 +1,0 @@
-******************************* Dependencies *******************************
--regular - express express-validator bcryptjs config gravatar 
-  jsonwebtoken mongoose request 
--dev - nodemon concurrently

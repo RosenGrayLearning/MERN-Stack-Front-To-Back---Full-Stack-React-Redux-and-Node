@@ -1,0 +1,8 @@
+******************************* Express Validator *******************************
+-   {check,validationResult} = require('express-validator'),
+-   const postUsersValidator = [
+    check('name','Name is required').not().isEmpty(),
+    check('email','Please Include A Valid Email').isEmail(),
+    check('password','Please Enter A Password with 6 or more characters').isLength({min:6})
+];
+router.post('/',postUsersValidator,postUsersController);

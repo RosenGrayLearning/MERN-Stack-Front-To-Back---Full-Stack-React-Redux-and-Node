@@ -1,0 +1,4 @@
+{
+    "mongoURI":"mongodb+srv://test:123@mernsocialcluster-ulpjs.mongodb.net/devconnector?retryWrites=true&w=majority",
+    "jwtSecret": "mysecrettoken"
+}

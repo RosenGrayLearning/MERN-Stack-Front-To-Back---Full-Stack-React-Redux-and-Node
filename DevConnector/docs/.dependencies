@@ -1,0 +1,22 @@
+******************************* Dependencies *******************************
+-regular - express express-validator bcryptjs config gravatar 
+  jsonwebtoken mongoose request 
+-dev - nodemon concurrently
+******************************* Dependencies *******************************
+
+
+******************************* Config *******************************
+- Creating global variables for us to use inside our app
+  we can create default.json file which will contain all our default values
+  const config = require('config');
+  config.get('mongoURI') // gets our connection string which is in the default.json file
+  ******************************* Config *******************************
+
+******************************* Express Router *******************************
+- connecting our different routes which are located on seperate files
+- different files:  const express = require('express'),
+                    router = express.Router();
+                    router.get('/',(req,res,next) => {
+                  res.send('User Route');
+           });
+- server.js : app.use('/api/users',require('./routes/api/users'));
