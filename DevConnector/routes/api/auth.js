@@ -8,7 +8,6 @@ const express = require('express'),
       {check,validationResult} = require('express-validator');
 
 /**
- * 
  * @param {Object} req 
  * @param {Object} res 
  * @param {Funtion} next 
