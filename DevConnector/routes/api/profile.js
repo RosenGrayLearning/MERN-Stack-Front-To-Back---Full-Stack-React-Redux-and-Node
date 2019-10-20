@@ -93,6 +93,18 @@ const express = require('express'),
        helpers.sendServerError500(err,res);
     }
 }
+const deleteProfileUserAndPostsController = async (req,res,next) => {
+    try {
+        //@todo - remove users posts
+        //Remove Profile
+        await Profile.findOneAndRemove({user:req.user.id});
+        //Remove User
+        await User.findOneAndRemove({_id:req.user.id});
+        res.json({msg:'User deleted'});
+    } catch (err) {
+       helpers.sendServerError500(err,res);
+    }
+}
 
 
 
@@ -132,6 +144,13 @@ router.get('/',getAllProfileController);
  * @access      Public
  */
 router.get('/user/:user_id',getAProfileByUserIdController);
+
+/**
+ * @route       DELETE api/profile/
+ * @description Get Profile , user & posts
+ * @access      Private
+ */
+router.delete('/',auth,deleteProfileUserAndPostsController);
 
 
 
