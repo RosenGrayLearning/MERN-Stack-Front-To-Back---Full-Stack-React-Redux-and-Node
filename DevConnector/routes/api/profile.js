@@ -93,7 +93,7 @@ const express = require('express'),
        helpers.sendServerError500(err,res);
     }
 }
-const deleteProfileUserAndPostsController = async (req,res,next) => {
+ const deleteProfileUserAndPostsController = async (req,res,next) => {
     try {
         //@todo - remove users posts
         //Remove Profile
@@ -105,9 +105,31 @@ const deleteProfileUserAndPostsController = async (req,res,next) => {
        helpers.sendServerError500(err,res);
     }
 }
+const putProfileExperienceController =  async (req,res,next) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors:errors.array()});
+    }
+    const {title,company,location,from,to,current,description} = req.body,
+           newExp = {
+               title,
+               company,
+               location,
+               from,
+               to,
+               current,
+               description
+           };
+    try {
+        const profile = await Profile.findOne({user:req.user.id});
+        profile.experience.unshift(newExp);
+        await profile.save();
+        res.json(profile);
+    } catch (err) {
+        helpers.sendServerError500(err,res);
+    }
 
-
-
+}
 
  //Validators
  const postProfileValidator = [
@@ -115,6 +137,11 @@ const deleteProfileUserAndPostsController = async (req,res,next) => {
     check('skills','Skills are required').not().isEmpty()
  ];
 
+ const putProfileExperienceValidator = [
+     check('title','Title is required').not().isEmpty(),
+     check('company','Company is required').not().isEmpty(),
+     check('from','From Date is required').not().isEmpty()
+ ];
 
 /**
  * @route       GET api/profile/me
@@ -151,6 +178,13 @@ router.get('/user/:user_id',getAProfileByUserIdController);
  * @access      Private
  */
 router.delete('/',auth,deleteProfileUserAndPostsController);
+
+/**
+ * @route       PUT api/profile/experience
+ * @description Add profile experience
+ * @access      Private
+ */
+router.put('/experience',[auth,putProfileExperienceValidator],putProfileExperienceController);
 
 
 

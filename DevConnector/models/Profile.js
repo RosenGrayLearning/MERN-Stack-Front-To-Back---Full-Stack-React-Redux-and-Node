@@ -35,7 +35,7 @@ const mongoose = require('mongoose'),
                 type: String,
                 required:true
               },
-              compwny:{
+              company:{
                 type: String,
                 required:true
               },
