@@ -130,6 +130,19 @@ const putProfileExperienceController =  async (req,res,next) => {
     }
 
 }
+const deleteProfileExperienceController =  async (req,res,next) => {
+    try {
+        const profile = await Profile.findOne({user:req.user.id});
+        //Get remove index
+        const removeIndex = profile.experience.map(item=>item.id).indexOf(req.params.exp_id);
+        profile.experience.splice(removeIndex,1);
+        await profile.save();
+        res.json(profile);
+    } catch (err) {
+        helpers.sendServerError500(err,res);
+    }
+}
+
 
  //Validators
  const postProfileValidator = [
@@ -186,6 +199,12 @@ router.delete('/',auth,deleteProfileUserAndPostsController);
  */
 router.put('/experience',[auth,putProfileExperienceValidator],putProfileExperienceController);
 
+/**
+ * @route       DELETE api/profile/experience/:exp_id
+ * @description Delete experiance from profile
+ * @access      Private
+ */
+router.delete('/experience/:exp_id',auth,deleteProfileExperienceController);
 
 
 module.exports = router;
