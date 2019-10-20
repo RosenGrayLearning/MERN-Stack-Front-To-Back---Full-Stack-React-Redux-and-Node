@@ -142,6 +142,44 @@ const deleteProfileExperienceController =  async (req,res,next) => {
         helpers.sendServerError500(err,res);
     }
 }
+const putProfileEducationController =  async (req,res,next) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors:errors.array()});
+    }
+    const {school,degree,fieldofstudy,from,to,current,description} = req.body,
+           newEdu = {
+              school,
+              degree,
+              fieldofstudy,
+               from,
+               to,
+               current,
+               description
+           };
+    try {
+        const profile = await Profile.findOne({user:req.user.id});
+        profile.education.unshift(newEdu);
+        await profile.save();
+        res.json(profile);
+    } catch (err) {
+        helpers.sendServerError500(err,res);
+    }
+
+}
+const deleteProfileEducationController =  async (req,res,next) => {
+    try {
+        const profile = await Profile.findOne({user:req.user.id});
+        //Get remove index
+        const removeIndex = profile.education.map(item=>item.id).indexOf(req.params.edu_id);
+        profile.education.splice(removeIndex,1);
+        await profile.save();
+        res.json(profile);
+    } catch (err) {
+        helpers.sendServerError500(err,res);
+    }
+}
+
 
 
  //Validators
@@ -155,6 +193,12 @@ const deleteProfileExperienceController =  async (req,res,next) => {
      check('company','Company is required').not().isEmpty(),
      check('from','From Date is required').not().isEmpty()
  ];
+ const putProfileEducationValidator = [
+    check('school','School is required').not().isEmpty(),
+    check('degree','Degree is required').not().isEmpty(),
+    check('fieldofstudy','Field of study is required').not().isEmpty(),
+    check('from','From Date is required').not().isEmpty()
+];
 
 /**
  * @route       GET api/profile/me
@@ -205,6 +249,20 @@ router.put('/experience',[auth,putProfileExperienceValidator],putProfileExperien
  * @access      Private
  */
 router.delete('/experience/:exp_id',auth,deleteProfileExperienceController);
+
+/**
+ * @route       PUT api/profile/education
+ * @description Add profile education
+ * @access      Private
+ */
+router.put('/education',[auth,putProfileEducationValidator],putProfileEducationController);
+
+/**
+ * @route       DELETE api/profile/education/:edu_id
+ * @description Delete education from profile
+ * @access      Private
+ */
+router.delete('/education/:edu_id',auth,deleteProfileEducationController);
 
 
 module.exports = router;
