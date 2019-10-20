@@ -1,4 +1,6 @@
 const express = require('express'),
+      request = require('request'),
+      config = require('config'),
       router = express.Router(),
       auth = require('../../middleware/auth'),
       helpers = require('../../helpers/helpers'),
@@ -179,6 +181,28 @@ const deleteProfileEducationController =  async (req,res,next) => {
         helpers.sendServerError500(err,res);
     }
 }
+const getUserReposController = (req,res,next) => {
+    try {
+        const options = {
+            uri: `https://api.github.com/users/${req.params.username}/repos
+            ?per_page=5
+            &client_id=${config.get('githubClientId')}
+            &client_secret=${config.get('githubSecret')}`,
+            method:'GET',
+            headers:{'user-agent':'node.js'}
+        }
+        request(options,(error,response,body)=>{
+            if(error) console.error(error);
+            if(response.statusCode !== 200){
+                return res.status(404).json({msg:'No Github profile found'});
+            }
+            res.json(JSON.parse(body));
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).send('Server Error');
+    }
+}
 
 
 
@@ -264,5 +288,11 @@ router.put('/education',[auth,putProfileEducationValidator],putProfileEducationC
  */
 router.delete('/education/:edu_id',auth,deleteProfileEducationController);
 
+/**
+ * @route       GET api/profile/github/:username
+ * @description Get user repos from Github
+ * @access      Public
+ */
+router.get('/github/:username',getUserReposController);
 
 module.exports = router;
