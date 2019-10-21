@@ -83,7 +83,40 @@ const deletePostByIdController = async (req,res,next) => {
         res.status(500).send('Server Error');
     }
 };
-    
+const putLikePostController = async (req,res,next) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        //Check if the post has already been liked by the user
+        if(post.likes.filter(like=> like.user.toString() === req.user.id).length > 0){
+            return res.status(400).json({msg:'Post already liked'});
+        }
+        post.likes.unshift({user:req.user.id});
+        await post.save();
+        res.json(post.likes);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error'); 
+    }
+};
+const putUnLikePostController = async (req,res,next) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        //Check if the post has already been liked by the user
+        if(post.likes.filter(like=> like.user.toString() === req.user.id).length === 0){
+            return res.status(400).json({msg:'Post has not yet been liked'});
+        }
+        //Get remove index
+        const removeIndex = post.likes.map(like=> like.user.toString()).indexOf(req.user.id);
+       post.likes.splice(removeIndex,1);
+        await post.save();
+        res.json(post.likes);
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error'); 
+    }
+};   
 
 
 //Validators
@@ -123,6 +156,20 @@ router.get('/:id',auth,getPostByIdController);
  * @access      Private
  */
 router.delete('/:id',auth,deletePostByIdController);
+
+/**
+ * @route       PUt api/posts/like/:id
+ * @description Like a post
+ * @access      Private
+ */
+router.put('/like/:id',auth,putLikePostController);
+
+/**
+ * @route       PUt api/posts/unlike/:id
+ * @description Unike a post
+ * @access      Private
+ */
+router.put('/unlike/:id',auth,putUnLikePostController);
 
 
 
