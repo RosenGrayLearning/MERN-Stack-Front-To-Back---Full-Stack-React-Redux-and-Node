@@ -1,0 +1,4 @@
+ ******************************* Proxy *******************************
+- in order to be able to send requests without speciy the all path 
+  we can add a proxy property within our package.json file
+-  "proxy" : "http://localhost:5000"
